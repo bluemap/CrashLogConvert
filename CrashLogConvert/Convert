@@ -1,0 +1,43 @@
+#!/bin/sh
+#-----------------------
+#Author:lijin
+#mail:bluemap@163.com
+#-----------------------
+
+#切换到脚本所在目录
+cd $(dirname $0);
+
+dsym_file_full_name="";
+for file in ./*;
+    do
+    file_full_name=`basename $file`
+    #去头，从头部删除最长匹配字串，得到后缀
+    suffix=${file_full_name##*.}
+    dSYM_suffix="dSYM"
+
+    if [ $suffix == $dSYM_suffix ];then
+    dsym_file_full_name=file_full_name
+    fi
+done;
+
+#遍历崩溃日志
+for file in ./crashlogs/*;
+    do
+    file_full_name=`basename $file`
+    echo $file_full_name
+    suffix=${file_full_name##*.}
+    file_name=${file_full_name%.*}
+    crash_suffix="crash"
+
+#if语句开始
+    if [ $suffix == $crash_suffix ]; then
+        echo "开始转换崩溃日志:./crashlogs/"$file_full_name
+        ./symbolicatecrash ./crashlogs/$file_full_name ./crashlogs/$dsym_file_full_name > ./convertlogs/$file_name.log
+        if [ ! -f ./convertlogs/$file_name.log ]; then
+        echo "崩溃日志:./crashlogs/"$file_full_name"转换失败"
+        else
+        echo "转换后文件:"./convertlogs/$file_name.log
+        fi
+    fi
+    echo "崩溃日志转换结束"
+done;
