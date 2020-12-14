@@ -1,9 +1,6 @@
 #!/bin/sh
-#-----------------------
-#Author:lijin
-#mail:bluemap@163.com
-#-----------------------
 
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer/
 #切换到脚本所在目录
 cd $(dirname $0);
 
@@ -16,7 +13,7 @@ for file in ./*;
     dSYM_suffix="dSYM"
 
     if [ $suffix == $dSYM_suffix ];then
-    dsym_file_full_name=file_full_name
+    dsym_file_full_name=$file_full_name
     fi
 done;
 
@@ -32,9 +29,10 @@ for file in ./crashlogs/*;
 #if语句开始
     if [ $suffix == $crash_suffix ]; then
         echo "开始转换崩溃日志:./crashlogs/"$file_full_name
-        ./symbolicatecrash ./crashlogs/$file_full_name ./crashlogs/$dsym_file_full_name > ./convertlogs/$file_name.log
+        ./symbolicatecrash ./crashlogs/$file_full_name ./$dsym_file_full_name > ./convertlogs/$file_name.log
         if [ ! -f ./convertlogs/$file_name.log ]; then
         echo "崩溃日志:./crashlogs/"$file_full_name"转换失败"
+        echo "dsym文件："$dsym_file_full_name
         else
         echo "转换后文件:"./convertlogs/$file_name.log
         fi
